@@ -7,7 +7,7 @@ This wallet runs on a Unix or Linux terminal (compile with "make") and asks you 
 
 sha256 (sha256 (sha256 (... sha256 (password) ...)))
 
-The idea here is to have a wallet that takes a long time to be created. After generation, you should only keep the password, the base/exponent and the public key. Do not keep the private key at first. All information will be saved to a file at the end of the program. Please edit this file to remove the private key.
+The idea here is to have a wallet that takes a long time to be created. After generation, you should only keep the password, the base/exponent and the public key in a paper wallet. Do not keep the private key at first. All information will be saved to a file at the end of the program. Please edit this file to remove the private key.
 
 If someone tries to get your key, you are not able to give it. Even if he gets some parameters from you, he has to run the program for many days until he finds out that you gave the wrong information. So, you have enough time to recover from the situation.
 
