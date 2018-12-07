@@ -1,5 +1,5 @@
 # ChainWallet
-This program is for anyone who wants to protect their bitcoins.
+This program is for anyone who want to protect their bitcoins.
 
 Imagine, somebody tortures you with the intention of getting your coins. In an extreme situation, you have no choice. The guy picks up your private key and immediately hands over the coins. What can you do to avoid this situation? Use the ChainWallet!
 
