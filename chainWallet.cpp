@@ -46,7 +46,7 @@ string toYDHMS(uint64_t s)
 	h -= d*24;
 	uint64_t y = d / 365;
 	d -= y*365;
-	sprintf(buffer,"%lu years, %lu days, %lu hours, %lu minutes and %lu seconds",y,d,h,m,s);
+	sprintf(buffer,"%llu years, %llu days, %llu hours, %llu minutes and %llu seconds",y,d,h,m,s);
 	return buffer;
 }
 
