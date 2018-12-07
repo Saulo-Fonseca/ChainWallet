@@ -3,7 +3,7 @@ This program is for anyone who wants to protect their bitcoins.
 
 Imagine, somebody tortures you with the intention of getting your coins. In an extreme situation, you have no choice. The guy picks up your private key and immediately hands over the coins. What can you do to avoid this situation? Use the ChainWallet!
 
-This wallet runs on a Linux terminal (compile with "make") and asks you for a few parameters in order to create a private key, such as a password and how many SHA256 rounds it will take to reach your private key in the form of a base and exponent. The number should be large. If you take a big base/exponent such as 2^40 or 10^12, the program will to run many days until you get the wallet's private and public key.
+This wallet runs on a Linux terminal (compile with "make") and asks you for a few parameters in order to create a private key. It asks for a password and a exponential number that will define how many SHA256 rounds it will take to reach your private key. The number should be large. If you take a big base/exponent such as 2^40 or 10^12, the program will to run for many days until you get the wallet's private and public key.
 
 sha256 (sha256 (sha256 (... sha256 (password) ...)))
 
