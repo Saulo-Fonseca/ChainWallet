@@ -330,7 +330,7 @@ void saveKey(string p, int b, int n, string hex, string wifC, string pubC, strin
 	krypt(source,destination,length,p);
 
 	// Save key on a file
-	string fileName = pubC + ".crypt";
+	string fileName = pubC + ".krypt";
 	ofstream file(fileName, ios::out | ios::binary);
 	if (!file)
 	{
