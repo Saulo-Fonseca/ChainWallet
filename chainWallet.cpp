@@ -382,7 +382,7 @@ int main(int argc, char **argv)
 
 	// Calculate exponent
 	mpz_ui_pow_ui (limit.get_mpz_t(), b, n);
-	interval = limit / 100;
+	interval = limit / 1000;
 	intern = interval;
 
 	// Run chain loop
@@ -408,7 +408,7 @@ int main(int argc, char **argv)
 				mpz_class etaEnd = limit / rate;
 				etaStr = toYDHMS(eta.get_ui());
 				etaTotal = toYDHMS(etaEnd.get_ui());
-				cout << "Remaining: " << etaStr << endl;
+				cout << "Rate: " << rate << " hash/s, Remaining: " << etaStr << endl;
 				intern += interval;
 			}
 		}
