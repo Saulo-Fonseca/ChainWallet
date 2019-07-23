@@ -417,7 +417,7 @@ int main(int argc, char **argv)
 
 	// Create Private Key
 	string bufStr = hash2str(hashBuf, 32);
-	GF sk(mpz_class(bufStr,16),secp256k1.N);
+	GF sk(mpz_class(bufStr,16),secp256k1.P);
 
 	// Convert private key to WIF (compressed)
 	char privBuf[65];
