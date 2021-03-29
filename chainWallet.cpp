@@ -12,6 +12,7 @@
 #include <chrono>
 #include <fstream>
 #include <inttypes.h>     // printf uint64_t
+#include "BIP39.hpp"
 #include "SHA256.h"
 #include "RIPEMD160.h"
 #include "SHA512.hpp"
@@ -304,7 +305,7 @@ void krypt(uint8_t *source, uint8_t *destination, int len, string password)
 }	
 
 // Save results
-void saveKey(string p, int b, int n, string hex, string wifC, string pubC, string seg, string eta)
+void saveKey(string p, int b, int n, string hex, string mnemonic, string wifC, string pubC, string seg, string eta)
 {
 	// Show found key on stdout
 	cout << "Public Key compressed        - " << pubC << endl;
@@ -317,6 +318,7 @@ void saveKey(string p, int b, int n, string hex, string wifC, string pubC, strin
 	toEncrypt += "Exponent                     - " + to_string(n) + "\n";
 	toEncrypt += "Private Key (hex)            - " + hex + " - It should be deleted" + "\n";
 	toEncrypt += "Private Key (WIF compressed) - " + wifC + " - It should be deleted" + "\n";
+	toEncrypt += "BIP39 mnemonic (HD wallet)   - " + mnemonic + " - It should be deleted" + "\n";  
 	toEncrypt += "Public Key compressed        - " + pubC + "\n";
 	toEncrypt += "Public Segwit P2SH(P2WPKH)   - " + seg + "\n";
 	toEncrypt += "Time to complete             - " + eta + "\n";
@@ -348,6 +350,32 @@ string hash160(const string &x)
 {
 	return getHash(getHash(x,1),2);
 }
+
+// Convert private key to BIP39 mnemonic
+string toBIP39(char* privBuf)
+{
+	// Create checksum
+	string sha256 = getHash(privBuf,1);
+	string checksum = sha256.substr(0,2);
+	string entropy = privBuf + checksum;
+
+	// Get mnemonic
+	string mnemonic;
+	mpz_t n, next11, b11;
+	mpz_init(n);
+	mpz_init(next11);
+	mpz_init(b11);
+	mpz_set_str(n,entropy.c_str(),16);
+	mpz_set_ui(b11,2047);
+	for (int i=0; i<24; i++)
+	{
+		mpz_and(next11,n,b11);
+		mnemonic = getWord(mpz_get_ui(next11)) + " " + mnemonic;
+		mpz_fdiv_q_2exp(n,n,11); // shift >> 11
+	}
+	return mnemonic;
+}
+
 
 int main(int argc, char **argv)
 {
@@ -437,7 +465,10 @@ int main(int argc, char **argv)
 	// Create Segwit P2SH(P2WPKH) address
 	string seg = encodeBase58Check(mainnetChecksum("05",hash160("0014"+hash160(splitXY(pubBuf,pk))),false));
 
+	// Create BIP39 mnemonic
+	string mnemonic = toBIP39(privBuf);
+
 	// Show all calculated info
-	saveKey(password,b,n,privBuf,wifC,pubC,seg,etaTotal);
+	saveKey(password,b,n,privBuf,mnemonic,wifC,pubC,seg,etaTotal);
 }
 
