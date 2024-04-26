@@ -95,7 +95,9 @@
 			}
 		</style>
 		<script>
-			function getWord(idx) // List of BIP39 words
+
+			// List of BIP39 words
+			function getWord(idx)
 			{
 				const bip = [];
 				bip.push("abandon");
@@ -2149,11 +2151,9 @@
 				added = true;
 				return bip[idx];
 			}
-			function byte2bin(num) // Convert byte to binary string
-			{
-				return ("00000000"+num.toString(2)).substr(-8);
-			}
-			function showRemaining(s) // Show remaining time in years, days, hours, seconds
+
+			// Show remaining time in years, days, hours, seconds
+			function showRemaining(s)
 			{
 				var m = Math.floor(s/60);
 				s     = Math.ceil(s-m*60);
@@ -2165,179 +2165,209 @@
 				d    -= y*365;
 				return "Remaining: " + y + " years, " + d + " days, " + h + " hours, " + m + " minutes and " + s + " seconds";
 			}
-			function seeHash(uInt8Array) // Used in development to check results
-			{
-				var hashArray = Array.from(uInt8Array);
-				var hashHex = hashArray
-					.map((b) => b.toString(16).padStart(2, "0"))
-					.join("");
-				return hashHex;
-			}
-			function getNumberLocale() // Check what is the appropriate number format to use
+
+			// Check what is the appropriate number format to use
+			function getNumberLocale()
 			{
 				var separator = (0.1).toLocaleString().substring(1, 2);
 				if (separator === ".") {return "de-DE"}
 				return "en-US";
 			}
-			/*
-			Copyright 2022 Andrea Griffini
-			https://github.com/6502/sha256
 
-			Permission is hereby granted, free of charge, to any person obtaining
-			a copy of this software and associated documentation files (the
-			"Software"), to deal in the Software without restriction, including
-			without limitation the rights to use, copy, modify, merge, publish,
-			distribute, sublicense, and/or sell copies of the Software, and to
-			permit persons to whom the Software is furnished to do so, subject to
-			the following conditions:
-
-			The above copyright notice and this permission notice shall be
-			included in all copies or substantial portions of the Software.
-
-			THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-			EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-			MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-			NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-			LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-			OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-			WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-			*/
-
-			// sha256(data) returns the digest
-			// sha256() returns an object you can call .add(data) zero or more time and .digest() at the end
-			// digest is a 32-byte Uint8Array instance with an added .hex() function.
-			async function sha256(data) {
-				let h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a,
-					h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19,
-					tsz = 0, bp = 0;
-				const k = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-						   0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-						   0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-						   0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-						   0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-						   0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-						   0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-						   0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2],
-					  rrot = (x, n) => (x >>> n) | (x << (32-n)),
-					  w = new Uint32Array(64),
-					  buf = new Uint8Array(64),
-					  process = () => {
-						  for (let j=0,r=0; j<16; j++,r+=4) {
-							  w[j] = (buf[r]<<24) | (buf[r+1]<<16) | (buf[r+2]<<8) | buf[r+3];
-						  }
-						  for (let j=16; j<64; j++) {
-							  let s0 = rrot(w[j-15], 7) ^ rrot(w[j-15], 18) ^ (w[j-15] >>> 3);
-							  let s1 = rrot(w[j-2], 17) ^ rrot(w[j-2], 19) ^ (w[j-2] >>> 10);
-							  w[j] = (w[j-16] + s0 + w[j-7] + s1) | 0;
-						  }
-						  let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
-						  for (let j=0; j<64; j++) {
-							  let S1 = rrot(e, 6) ^ rrot(e, 11) ^ rrot(e, 25),
-								  ch = (e & f) ^ ((~e) & g),
-								  t1 = (h + S1 + ch + k[j] + w[j]) | 0,
-								  S0 = rrot(a, 2) ^ rrot(a, 13) ^ rrot(a, 22),
-								  maj = (a & b) ^ (a & c) ^ (b & c),
-								  t2 = (S0 + maj) | 0;
-							  h = g; g = f; f = e; e = (d + t1)|0; d = c; c = b; b = a; a = (t1 + t2)|0;
-						  }
-						  h0 = (h0 + a)|0; h1 = (h1 + b)|0; h2 = (h2 + c)|0; h3 = (h3 + d)|0;
-						  h4 = (h4 + e)|0; h5 = (h5 + f)|0; h6 = (h6 + g)|0; h7 = (h7 + h)|0;
-						  bp = 0;
-					  },
-					  add = data => {
-						  for (let i=0; i<data.length; i++) {
-							  buf[bp++] = data[i];
-							  if (bp === 64) process();
-						  }
-						  tsz += data.length;
-					  },
-					  digest = () => {
-						  buf[bp++] = 0x80; if (bp == 64) process();
-						  if (bp + 8 > 64) {
-							  while (bp < 64) buf[bp++] = 0x00;
-							  process();
-						  }
-						  while (bp < 58) buf[bp++] = 0x00;
-						  // Max number of bytes is 35,184,372,088,831
-						  let L = tsz * 8;
-						  buf[bp++] = (L / 1099511627776.) & 255;
-						  buf[bp++] = (L / 4294967296.) & 255;
-						  buf[bp++] = L >>> 24;
-						  buf[bp++] = (L >>> 16) & 255;
-						  buf[bp++] = (L >>> 8) & 255;
-						  buf[bp++] = L & 255;
-						  process();
-						  let reply = new Uint8Array(32);
-						  reply[ 0] = h0 >>> 24; reply[ 1] = (h0 >>> 16) & 255; reply[ 2] = (h0 >>> 8) & 255; reply[ 3] = h0 & 255;
-						  reply[ 4] = h1 >>> 24; reply[ 5] = (h1 >>> 16) & 255; reply[ 6] = (h1 >>> 8) & 255; reply[ 7] = h1 & 255;
-						  reply[ 8] = h2 >>> 24; reply[ 9] = (h2 >>> 16) & 255; reply[10] = (h2 >>> 8) & 255; reply[11] = h2 & 255;
-						  reply[12] = h3 >>> 24; reply[13] = (h3 >>> 16) & 255; reply[14] = (h3 >>> 8) & 255; reply[15] = h3 & 255;
-						  reply[16] = h4 >>> 24; reply[17] = (h4 >>> 16) & 255; reply[18] = (h4 >>> 8) & 255; reply[19] = h4 & 255;
-						  reply[20] = h5 >>> 24; reply[21] = (h5 >>> 16) & 255; reply[22] = (h5 >>> 8) & 255; reply[23] = h5 & 255;
-						  reply[24] = h6 >>> 24; reply[25] = (h6 >>> 16) & 255; reply[26] = (h6 >>> 8) & 255; reply[27] = h6 & 255;
-						  reply[28] = h7 >>> 24; reply[29] = (h7 >>> 16) & 255; reply[30] = (h7 >>> 8) & 255; reply[31] = h7 & 255;
-						  return reply;
-					  };
-				if (data === undefined) return {add, digest};
-				add(data);
-				return digest();
-			}
-			async function chainLoop(uInt8Array,length) // ChainWallet main loop
+			// Worker without a separate Javascript file
+			var blobURL = URL.createObjectURL(new Blob(['(',function()
 			{
-				// Main loop
-				document.getElementById("progress").value = 0;
-				var limit = 10000000;
-				var locale = getNumberLocale();
-				var lastTime = Date.now();
-				var oldTime = lastTime;
-				for (i=0; i<length; i++)
-				{
-					uInt8Array = await sha256(uInt8Array);
-					if (i % limit === 0 && i !== 0)
-					{
-						var now = Date.now();
-						var diff = now - lastTime;
-						lastTime = now;
-						var remaining = (length - i) * diff / (limit * 1000);
-						var rate = limit * 1000 / diff;
-						document.getElementById("remaining").innerText = showRemaining(remaining);
-						document.getElementById("hashrate").innerText = "Rate: " + rate.toLocaleString(locale,{maximumFractionDigits:2}) + " hash/s";
-						document.getElementById("progress").value = i*100/length;
-						await new Promise(resolve => setTimeout(resolve, 50));
-					}
-				}
-				var rate = length * 1000 / (Date.now() - oldTime);
-				document.getElementById("hashrate").innerText = "Rate: " + rate.toLocaleString(locale,{maximumFractionDigits:2}) + " hash/s";
+				/*
+				Copyright 2022 Andrea Griffini
+				https://github.com/6502/sha256
 
-				// Create checksum for BIP39 mnemonic
-				var hash = await sha256(uInt8Array);
-				var checkSum = hash[0];
+				Permission is hereby granted, free of charge, to any person obtaining
+				a copy of this software and associated documentation files (the
+				"Software"), to deal in the Software without restriction, including
+				without limitation the rights to use, copy, modify, merge, publish,
+				distribute, sublicense, and/or sell copies of the Software, and to
+				permit persons to whom the Software is furnished to do so, subject to
+				the following conditions:
 
-				// Create a big string containing all numbers as binary
-				var binString = "";
-				for (i=0; i<uInt8Array.length; i++)
-				{
-					binString += byte2bin(uInt8Array[i]);
-				}
-				binString += byte2bin(checkSum);
+				The above copyright notice and this permission notice shall be
+				included in all copies or substantial portions of the Software.
 
-				// Create the mnemonic
-				for (i=0; i<binString.length; i+=11)
-				{
-					var word = getWord(parseInt(binString.substring(i,i+11),2));
-					if (i%(11*6) === 0 && i !== 0)
-					{
-						document.getElementById("mnemonic").innerHTML += "<br>" + word;
-					}
-					else
-					{
-						document.getElementById("mnemonic").innerHTML += " " + word;
-					}
+				THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+				EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+				MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+				NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+				LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+				OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+				WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+				*/
+
+				// sha256(data) returns the digest
+				// sha256() returns an object you can call .add(data) zero or more time and .digest() at the end
+				// digest is a 32-byte Uint8Array instance with an added .hex() function.
+				function sha256(data) {
+					let h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a,
+						h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19,
+						tsz = 0, bp = 0;
+					const k = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+							   0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+							   0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+							   0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+							   0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+							   0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+							   0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+							   0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2],
+						  rrot = (x, n) => (x >>> n) | (x << (32-n)),
+						  w = new Uint32Array(64),
+						  buf = new Uint8Array(64),
+						  process = () => {
+							  for (let j=0,r=0; j<16; j++,r+=4) {
+								  w[j] = (buf[r]<<24) | (buf[r+1]<<16) | (buf[r+2]<<8) | buf[r+3];
+							  }
+							  for (let j=16; j<64; j++) {
+								  let s0 = rrot(w[j-15], 7) ^ rrot(w[j-15], 18) ^ (w[j-15] >>> 3);
+								  let s1 = rrot(w[j-2], 17) ^ rrot(w[j-2], 19) ^ (w[j-2] >>> 10);
+								  w[j] = (w[j-16] + s0 + w[j-7] + s1) | 0;
+							  }
+							  let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
+							  for (let j=0; j<64; j++) {
+								  let S1 = rrot(e, 6) ^ rrot(e, 11) ^ rrot(e, 25),
+									  ch = (e & f) ^ ((~e) & g),
+									  t1 = (h + S1 + ch + k[j] + w[j]) | 0,
+									  S0 = rrot(a, 2) ^ rrot(a, 13) ^ rrot(a, 22),
+									  maj = (a & b) ^ (a & c) ^ (b & c),
+									  t2 = (S0 + maj) | 0;
+								  h = g; g = f; f = e; e = (d + t1)|0; d = c; c = b; b = a; a = (t1 + t2)|0;
+							  }
+							  h0 = (h0 + a)|0; h1 = (h1 + b)|0; h2 = (h2 + c)|0; h3 = (h3 + d)|0;
+							  h4 = (h4 + e)|0; h5 = (h5 + f)|0; h6 = (h6 + g)|0; h7 = (h7 + h)|0;
+							  bp = 0;
+						  },
+						  add = data => {
+							  for (let i=0; i<data.length; i++) {
+								  buf[bp++] = data[i];
+								  if (bp === 64) process();
+							  }
+							  tsz += data.length;
+						  },
+						  digest = () => {
+							  buf[bp++] = 0x80; if (bp == 64) process();
+							  if (bp + 8 > 64) {
+								  while (bp < 64) buf[bp++] = 0x00;
+								  process();
+							  }
+							  while (bp < 58) buf[bp++] = 0x00;
+							  // Max number of bytes is 35,184,372,088,831
+							  let L = tsz * 8;
+							  buf[bp++] = (L / 1099511627776.) & 255;
+							  buf[bp++] = (L / 4294967296.) & 255;
+							  buf[bp++] = L >>> 24;
+							  buf[bp++] = (L >>> 16) & 255;
+							  buf[bp++] = (L >>> 8) & 255;
+							  buf[bp++] = L & 255;
+							  process();
+							  let reply = new Uint8Array(32);
+							  reply[ 0] = h0 >>> 24; reply[ 1] = (h0 >>> 16) & 255; reply[ 2] = (h0 >>> 8) & 255; reply[ 3] = h0 & 255;
+							  reply[ 4] = h1 >>> 24; reply[ 5] = (h1 >>> 16) & 255; reply[ 6] = (h1 >>> 8) & 255; reply[ 7] = h1 & 255;
+							  reply[ 8] = h2 >>> 24; reply[ 9] = (h2 >>> 16) & 255; reply[10] = (h2 >>> 8) & 255; reply[11] = h2 & 255;
+							  reply[12] = h3 >>> 24; reply[13] = (h3 >>> 16) & 255; reply[14] = (h3 >>> 8) & 255; reply[15] = h3 & 255;
+							  reply[16] = h4 >>> 24; reply[17] = (h4 >>> 16) & 255; reply[18] = (h4 >>> 8) & 255; reply[19] = h4 & 255;
+							  reply[20] = h5 >>> 24; reply[21] = (h5 >>> 16) & 255; reply[22] = (h5 >>> 8) & 255; reply[23] = h5 & 255;
+							  reply[24] = h6 >>> 24; reply[25] = (h6 >>> 16) & 255; reply[26] = (h6 >>> 8) & 255; reply[27] = h6 & 255;
+							  reply[28] = h7 >>> 24; reply[29] = (h7 >>> 16) & 255; reply[30] = (h7 >>> 8) & 255; reply[31] = h7 & 255;
+							  return reply;
+						  };
+					if (data === undefined) return {add, digest};
+					add(data);
+					return digest();
 				}
-				document.getElementById("remaining").innerHTML = "Done";
-				document.getElementById("progress").value = 100;
-			}
-			function generate() // Start generation
+
+				// Convert byte to binary string
+				function byte2bin(num)
+				{
+					return ("00000000"+num.toString(2)).substr(-8);
+				}
+
+				// Main from Worker
+				onmessage = function(e)
+				{
+					// Read parameters
+					var uInt8Array = e.data[0];
+					var length     = e.data[1];
+					var limit      = e.data[2];
+					var lastTime   = e.data[3];
+					var locale     = e.data[4];
+					var oldTime    = e.data[5];
+
+					// Main loop
+					for (i=0; i<length; i++)
+					{
+						uInt8Array = sha256(uInt8Array);
+						if (i % limit === 0 && i !== 0)
+						{
+							var now = Date.now();
+							var diff = now - lastTime;
+							lastTime = now;
+							var remaining = (length - i) * diff / (limit * 1000);
+							var rate = limit * 1000 / diff;
+							postMessage([remaining,rate,locale,i,length]);
+						}
+					}
+					var rate = length * 1000 / (Date.now() - oldTime);
+
+					// Create checksum for BIP39 mnemonic
+					var hash = sha256(uInt8Array);
+					var checkSum = hash[0];
+
+					// Create a big string containing all numbers as binary
+					var binString = "";
+					for (i=0; i<uInt8Array.length; i++)
+					{
+						binString += byte2bin(uInt8Array[i]);
+					}
+					binString += byte2bin(checkSum);
+					postMessage([binString,rate,locale]);
+				};
+			}.toString(),')()'],{type:'application/javascript'})),worker = new Worker(blobURL);
+			worker.onmessage = function(e)
+			{
+				if (e.data.length === 5)
+				{
+					// Update progress bar
+					var remaining = e.data[0];
+					var rate      = e.data[1];
+					var locale    = e.data[2];
+					var i         = e.data[3];
+					var length    = e.data[4];
+					document.getElementById("remaining").innerText = showRemaining(remaining);
+					document.getElementById("hashrate").innerText = "Rate: " + rate.toLocaleString(locale,{maximumFractionDigits:2}) + " hash/s";
+					document.getElementById("progress").value = i*100/length;
+				}
+				else
+				{
+					// Create the mnemonic
+					var binString = e.data[0];
+					var rate      = e.data[1];
+					var locale    = e.data[2];
+					for (i=0; i<binString.length; i+=11)
+					{
+						var word = getWord(parseInt(binString.substring(i,i+11),2));
+						if (i%(11*6) === 0 && i !== 0)
+						{
+							document.getElementById("mnemonic").innerHTML += "<br>" + word;
+						}
+						else
+						{
+							document.getElementById("mnemonic").innerHTML += " " + word;
+						}
+					}
+					document.getElementById("hashrate").innerText = "Rate: " + rate.toLocaleString(locale,{maximumFractionDigits:2}) + " hash/s";
+					document.getElementById("remaining").innerHTML = "Done";
+					document.getElementById("progress").value = 100;
+				}
+			};
+
+			// Start generation
+			function generate()
 			{
 				// Check parameters
 				var password = document.getElementById("password").value;
@@ -2350,6 +2380,8 @@
 
 				// Calculate chain length
 				var length = parseInt(base) ** parseInt(exponent);
+				var lastTime = Date.now();
+				var oldTime = lastTime;
 
 				// Hide values
 				document.getElementById("password").value = "";
@@ -2357,9 +2389,11 @@
 				document.getElementById("exponent").value = "";
 				document.getElementById("mnemonic").innerHTML = "";
 
-				// Calculate sha256 from password and enter loop
+				// Call worker
 				var uInt8Array = new TextEncoder().encode(password);
-				chainLoop(uInt8Array,length);
+				var limit = 1000000;
+				var locale = getNumberLocale();
+				worker.postMessage([uInt8Array,length,limit,lastTime,locale,oldTime]);
 			}
 		</script>
 	</head>
@@ -2373,24 +2407,33 @@
 						ChainWallet
 					</p>
 					<p class="text">
-						This is a program designed to prevent quick access to a Bitcoin private key. If someone tries to force you to reveal your key, you won't be able to do so immediately. Instead, you'll need to input your password, base number, and exponent, which will take a significant amount of time to generate the key. This gives you time to free yourself from the situation.
+						This is a program designed to prevent quick access to a Bitcoin private key. If someone tries to force you to reveal your key, you won't be able to do so immediately. Instead, you'll need to input your password, base number, and exponent, which will take a significant amount of time to generate the key. This gives you time to free yourself from the situation. 
 					</p>
 					<p class="text">
-						This is the JavaScript version of ChainWallet. There's another 30% faster JavaScript version available at <a href="sync.html">this</a> link, but it doesn't include a progress bar or remaining time display. You won't see any changes until it's done. It's even slightly faster than the original C++ version on <a href="https://github.com/Saulo-Fonseca/ChainWallet">Github</a>. These JavaScript versions allows people without Linux knowledge to use ChainWallet as well.
+						It works by performing key stretching over the hash of your original key. The length of the stretching should be defined by a huge number, which is easily represented by a base and exponent, such as 2<sup>40</sup> or 10<sup>12</sup>. I am not saying that this method increases the entropy of your wallet. I am saying that you are adding <b>time</b> as part of the puzzle.
+					</p>
+					<p class="center">
+						sha256(sha256(sha256(...sha256(privKey)...)))
+					</p>
+					<p class="text">
+						An ASIC cannot be used here. They have a huge hashrate because they calculate the hashes in parallel. It would be much slower when a hash depends on the last one, such as in this case. There is no ASIC designed to work in this way. And if one is created, just use it to create your wallet. You can see a discussion about this <a href="https://www.reddit.com/r/Bitcoin/comments/dinpw3/is_it_possible_to_directly_get_a_sha256_of_a">here</a>.
+					</p>
+					<p class="text">
+						This is the JavaScript version of ChainWallet. If running in Safari, it is as fast as the original C++ version on <a href="https://github.com/Saulo-Fonseca/ChainWallet">Github</a>. On Chrome or Firefox, it is about 50% slower. This JavaScript version enables people without Linux knowledge to use ChainWallet as well.
 					</p>
 					<p class="text">
 						If you are recovering your key, simply follow these steps. Please enter the password for your key, along with the base and exponent, then press "Generate." This will hide your parameters for security reasons. It will also provide an estimate of how long it will take. Once the process is complete, you will receive a BIP39 mnemonic (24 words) to be used with a Bitcoin wallet such as <a href="https://www.coinomi.com">Coinomi</a>.
 					</p>
 					<p class="text">
-						However, if you are creating it for the first time, you'll need to select a base/exponent combination that results in the desired waiting time. I recommend a minimum of 24 hours, but one week or one month would be more appropriate. Then, generate your wallet using the provided mnemonic, transfer your Bitcoins into it, and delete the wallet. Your Bitcoins are in the blockchain, not in the wallet, and the mnemonic provided here is the access to it. Be sure to preserve the public key for verification purposes. By doing so, you will only be able to recover it if you repeat the entire process. You just need to keep note of the password, base, and exponent used.
+						However, if you are creating it for the first time, you'll need to select a base/exponent combination that results in the desired waiting time. I recommend a minimum of 24 hours, but one week or one month would be more appropriate. Then, generate your wallet using the provided mnemonic, transfer your Bitcoins into it, and delete the wallet. Your Bitcoins are in the blockchain, not in the wallet, and the mnemonic provided here is the access to it. Be sure to preserve the public key for verification purposes. By doing so, you will only be able to recover it if you repeat the entire process. You just need to keep note of the password, base, and exponent used. This is a safe way to memorize your access to your coins. Easier than memorizing the 24 words themselves.
 					</p>
 					<p class="text">
-						This program runs locally on your computer inside your browser. No information is sent through the internet. It contains all functions in one file. You can save this HTML and run it locally on a computer without an internet connection or in a virtual machine without a network card. This increases security and avoids unwanted access to your parameters.
+						This program runs locally on your computer inside your browser. No information is sent through the internet. It contains all functions in one file. You can save this HTML and run it locally on a computer without an internet connection or in a virtual machine without a network card. This increases security and avoids unwanted access to your parameters. It was extensively tested, and I use it for my coins myself. But use it at your own risk. There is no guarantee from my side.
 					</p>
 					<hr>
 					<p class="input">
 						<label for="password">Password: </label>
-						<input type="text" id="password" size="16">
+						<input type="text" id="password" size="16" autocomplete="off">
 						&nbsp;&nbsp;&nbsp;&nbsp;
 						<label for="base">Base: </label>
 						<input type="number" id="base" min="1" max="1000">
@@ -2421,4 +2464,3 @@
 		</table>
 	</body>
 </html>
-
